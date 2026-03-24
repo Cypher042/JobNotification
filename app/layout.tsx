@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Internship Notification Form | IIT (ISM) Dhanbad",
-  description: "Official Internship Notification Form for IIT (ISM) Dhanbad",
+  title: "Job Notification Form | IIT (ISM) Dhanbad",
+  description: "Official Job Notification Form for IIT (ISM) Dhanbad",
 };
 
 export default function RootLayout({
