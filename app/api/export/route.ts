@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
+// @ts-ignore
 import { Parser } from 'json2csv';
 import Job from '@/models/Job';
 
