@@ -445,7 +445,7 @@ export default function JobForm() {
                       <input type="text" name="declarantName" value={formData.declarantName} onChange={handleChange} className="w-full border-b border-gray-400 py-2 outline-none focus:border-[#003366] bg-transparent" required />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-sm font-semibold">Date & Signature (Digital)</label>
+                      <label className="text-sm font-semibold">Date</label>
                       <input type="date" name="declarationDate" value={formData.declarationDate} onChange={handleChange} className="w-full border-b border-gray-400 py-2 outline-none focus:border-[#003366] bg-transparent" required />
                     </div>
                 </div>
