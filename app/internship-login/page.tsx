@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitErrorHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { GraduationCap, Building2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,7 +30,7 @@ export default function LoginPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginValues>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(loginSchema as any),
     defaultValues: {
       email: "",
       password: "",
@@ -41,7 +42,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("/api/auth/internship/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
@@ -50,12 +51,15 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
+        toast.error(data.message || "Invalid credentials");
         throw new Error(data.message || "Invalid credentials");
       }
 
-      router.push("/admin"); 
-    } catch (err: any) {
-      setError(err.message);
+      toast.success("Successfully logged in.");
+      router.push("/internship-notification-form"); 
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Something went wrong";
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -75,6 +79,12 @@ export default function LoginPage() {
     );
   };
 
+  const onInvalid: SubmitErrorHandler<LoginValues> = (errors) => {
+    if (Object.keys(errors).length > 0) {
+      toast.error("Please fill in all required fields correctly.");
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-white">
       {/* Left side branding */}
@@ -86,9 +96,9 @@ export default function LoginPage() {
           <h1 className="text-[2.75rem] font-serif font-bold leading-[1.15] tracking-tight">
             Career
             <br />
-            Advancement &
+            Development
             <br />
-            Mentoring Centre
+            Centre
           </h1>
           <div className="flex items-center justify-center space-x-3 text-slate-200 mt-8 pt-6 border-t border-white/10">
             <GraduationCap className="h-6 w-6" strokeWidth={1.5} />
@@ -117,7 +127,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-6">
             <div className="space-y-5 shadow-sm border border-slate-100 rounded-xl p-8 bg-slate-50/50">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-[13px] font-semibold text-slate-700">Email Address *</Label>
@@ -128,7 +138,7 @@ export default function LoginPage() {
               <div className="space-y-2 pt-2">
                 <div className="flex justify-between items-center">
                    <Label htmlFor="password" className="text-[13px] font-semibold text-slate-700">Password *</Label>
-                   <span className="text-xs text-blue-600 font-medium cursor-pointer hover:underline">Forgot password?</span>
+                   {/* <span className="text-xs text-blue-600 font-medium cursor-pointer hover:underline">Forgot password?</span> */}
                 </div>
                 <Input id="password" type="password" placeholder="••••••••" className={inputClass("password")} {...register("password")} />
                 <ErrorMessage fieldName="password" />
@@ -142,13 +152,13 @@ export default function LoginPage() {
               </div>
             )}
 
-            <Button type="submit" className="h-12 w-full bg-[#8994a3] hover:bg-[#727d8c] text-white font-medium text-base shadow-md rounded-lg mt-2" disabled={loading}>
+            <Button type="submit" className="h-12 w-full bg-[#8994a3] hover:bg-[#5d0207] text-white font-medium text-base shadow-md rounded-lg mt-2" disabled={loading}>
               {loading ? "Processing..." : "Sign In to Dashboard"}
             </Button>
             
             <div className="text-center w-full mt-6">
               <span className="text-slate-500 text-sm">Don't have an account? </span>
-              <Link href="/register" className="text-blue-600 text-sm font-semibold hover:underline">
+              <Link href="/internship-register" className="text-blue-600 text-sm font-semibold hover:underline">
                 Register here
               </Link>
             </div>

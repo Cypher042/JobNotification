@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitErrorHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { GraduationCap, Building2, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,7 +61,7 @@ export default function RegisterPage() {
     setValue,
     formState: { errors },
   } = useForm<RegisterValues>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(registerSchema as any),
     defaultValues: {
       fullName: "",
       email: "",
@@ -90,7 +91,7 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      const res = await fetch("/api/auth/register", {
+      const res = await fetch("/api/auth/internship/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
@@ -99,13 +100,15 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
+        toast.error(data.message || "Registration failed");
         throw new Error(data.message || "Something went wrong");
       }
 
-      alert("Registration successful! Please log in.");
-      router.push("/login");
-    } catch (err: any) {
-      setError(err.message);
+      toast.success("Registration successful! Redirecting...");
+      router.push("/internship-notification-form");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Something went wrong";
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -125,6 +128,17 @@ export default function RegisterPage() {
     );
   };
 
+  const onInvalid: SubmitErrorHandler<RegisterValues> = (errors) => {
+    // Collect all error messages from the object
+    const errorMessages = Object.values(errors)
+      .map(err => err?.message)
+      .filter(Boolean) as string[];
+      
+    if (errorMessages.length > 0) {
+      toast.error(`Please fix ${errorMessages.length} validation error(s) before submitting.`);
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-white">
       {/* Left side branding */}
@@ -136,9 +150,9 @@ export default function RegisterPage() {
           <h1 className="text-[2.75rem] font-serif font-bold leading-[1.15] tracking-tight">
             Career
             <br />
-            Advancement &
+            Development
             <br />
-            Mentoring Centre
+            Centre
           </h1>
           <div className="flex items-center justify-center space-x-3 text-slate-200 mt-8 pt-6 border-t border-white/10">
             <GraduationCap className="h-6 w-6" strokeWidth={1.5} />
@@ -167,7 +181,7 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
+          <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-12">
             {/* 1. Personal Information */}
             <div className="space-y-8">
               <div className="flex items-center space-x-4 border-b border-slate-100 pb-4">
@@ -228,7 +242,7 @@ export default function RegisterPage() {
                 </div>
                 <div className="space-y-[6px]">
                   <Label htmlFor="category" className="text-[13px] font-semibold text-slate-700">Category *</Label>
-                  <Select onValueChange={(val: string) => setValue("category", val, { shouldValidate: true })}>
+                  <Select onValueChange={(val: string | null) => val && setValue("category", val, { shouldValidate: true })}>
                     <SelectTrigger className={`h-11 w-full bg-white ${errors.category ? "border-[#ff4d4f] ring-1 ring-[#ff4d4f] text-[#ff4d4f]" : "border-slate-200"}`}>
                       <SelectValue placeholder="Select company category" />
                     </SelectTrigger>
@@ -273,7 +287,7 @@ export default function RegisterPage() {
                 </div>
                 <div className="space-y-[6px]">
                   <Label htmlFor="domains" className="text-[13px] font-semibold text-slate-700">Domains *</Label>
-                  <Select onValueChange={(val: string) => setValue("domains", val, { shouldValidate: true })}>
+                  <Select onValueChange={(val: string | null) => val && setValue("domains", val, { shouldValidate: true })}>
                     <SelectTrigger className={`h-11 w-full bg-white ${errors.domains ? "border-[#ff4d4f] ring-1 ring-[#ff4d4f] text-[#ff4d4f]" : "border-slate-200"}`}>
                       <SelectValue placeholder="Select multiple options..." />
                     </SelectTrigger>
@@ -312,7 +326,7 @@ export default function RegisterPage() {
                 </div>
                 <div className="space-y-[6px]">
                   <Label htmlFor="country" className="text-[13px] font-semibold text-slate-700">Country *</Label>
-                  <Select onValueChange={(val: string) => setValue("country", val, { shouldValidate: true })}>
+                  <Select onValueChange={(val: string | null) => val && setValue("country", val, { shouldValidate: true })}>
                     <SelectTrigger className={`h-11 w-full bg-white ${errors.country ? "border-[#ff4d4f] ring-1 ring-[#ff4d4f] text-[#ff4d4f]" : "border-slate-200"}`}>
                       <SelectValue placeholder="Select country..." />
                     </SelectTrigger>
@@ -368,7 +382,7 @@ export default function RegisterPage() {
                     </span>
                   )}
                 </Button>
-                <Link href="/login" className="flex-1 sm:w-auto">
+                <Link href="/internship-login" className="flex-1 sm:w-auto">
                   <Button type="button" variant="outline" className="w-full h-12 font-semibold text-slate-700 border-slate-200 hover:bg-slate-50 transition-colors">
                     Already have an account? Sign In
                   </Button>

@@ -19,13 +19,22 @@ export async function POST(req: Request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const recruiter = await Recruiter.create({
+    await Recruiter.create({
       ...body,
       password: hashedPassword,
     });
 
-    return NextResponse.json({ message: 'Recruiter created successfully', success: true });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+    const response = NextResponse.json({ message: 'Recruiter created successfully', success: true });
+    response.cookies.set('auth_session', '1', {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+    });
+    return response;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ message }, { status: 500 });
   }
 }
