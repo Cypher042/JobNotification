@@ -228,7 +228,7 @@ export default function RegisterPage() {
                 </div>
                 <div className="space-y-[6px]">
                   <Label htmlFor="category" className="text-[13px] font-semibold text-slate-700">Category *</Label>
-                  <Select onValueChange={(val) => setValue("category", val, { shouldValidate: true })}>
+                  <Select onValueChange={(val: string) => setValue("category", val, { shouldValidate: true })}>
                     <SelectTrigger className={`h-11 w-full bg-white ${errors.category ? "border-[#ff4d4f] ring-1 ring-[#ff4d4f] text-[#ff4d4f]" : "border-slate-200"}`}>
                       <SelectValue placeholder="Select company category" />
                     </SelectTrigger>
@@ -273,7 +273,7 @@ export default function RegisterPage() {
                 </div>
                 <div className="space-y-[6px]">
                   <Label htmlFor="domains" className="text-[13px] font-semibold text-slate-700">Domains *</Label>
-                  <Select onValueChange={(val) => setValue("domains", val, { shouldValidate: true })}>
+                  <Select onValueChange={(val: string) => setValue("domains", val, { shouldValidate: true })}>
                     <SelectTrigger className={`h-11 w-full bg-white ${errors.domains ? "border-[#ff4d4f] ring-1 ring-[#ff4d4f] text-[#ff4d4f]" : "border-slate-200"}`}>
                       <SelectValue placeholder="Select multiple options..." />
                     </SelectTrigger>
@@ -312,7 +312,7 @@ export default function RegisterPage() {
                 </div>
                 <div className="space-y-[6px]">
                   <Label htmlFor="country" className="text-[13px] font-semibold text-slate-700">Country *</Label>
-                  <Select onValueChange={(val) => setValue("country", val, { shouldValidate: true })}>
+                  <Select onValueChange={(val: string) => setValue("country", val, { shouldValidate: true })}>
                     <SelectTrigger className={`h-11 w-full bg-white ${errors.country ? "border-[#ff4d4f] ring-1 ring-[#ff4d4f] text-[#ff4d4f]" : "border-slate-200"}`}>
                       <SelectValue placeholder="Select country..." />
                     </SelectTrigger>
